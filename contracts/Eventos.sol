@@ -17,7 +17,8 @@ contract Eventos {
     mapping(address => Cuenta) private cuentas;
 
     function abrirCuenta(string memory nombre) external {
-        cuentas[msg.sender] = Cuenta(nombre, 0);
+        require(bytes(nombre).length > 0, "Nombre no puede estar vacío");
+        cuentas[msg.sender] = Cuesta(nombre, 0);
         emit AperturaExitosa(
             nombre,
             keccak256(abi.encodePacked(nombre, msg.sender)),
@@ -33,7 +34,8 @@ contract Eventos {
 
     function consumir(uint256 importe) external {
         Cuenta memory cuentaCliente = cuentas[msg.sender];
-        cuentaCliente.saldo += importe;
+        require(cuentaCliente.saldo >= importe, "Saldo insuficiente");
+        cuentaCliente.saldo -= importe;
         emit Operacion(TipoOperacion.Consumo, cuentaCliente.nombre, importe);
     }
 
